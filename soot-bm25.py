@@ -23,29 +23,58 @@ def strip_tags(html):
 
 # Configure command line arguments
 
-p = argparse.ArgumentParser("soot-bm25", description="Mastodon search interface prototype!"
-                                                     "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
-p.add_argument('--client-key', help=' and get client key')
-p.add_argument('--client-secret', help='client secret')
-p.add_argument('--access-token', help='client access token')
-p.add_argument('-u','--user', help='your user id')
-p.add_argument('-p','--password', help='your password')
-p.add_argument('--handle', help='the user handle of your account')
-p.add_argument('--base-url', default="mastodon.social", help="base url of your instance")
-p.add_argument('--query',help="free-text search query, space-separated. Example \"@friend Cool stuff #awesome\"  ")
-args = p.parse_args()
 
+class UserInterface():
+    def __init__(self):
+        p = argparse.ArgumentParser("soot-bm25", description="Mastodon search interface prototype!"
+                                                             "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
+        p.add_argument('--client-key', help=' and get client key')
+        p.add_argument('--client-secret', help='client secret')
+        p.add_argument('--access-token', help='client access token')
+        p.add_argument('-u','--user', help='your user id')
+        p.add_argument('-p','--password', help='your password')
+        p.add_argument('--handle', help='the user handle of your account')
+        p.add_argument('--base-url', default="mastodon.social", help="base url of your instance")
+        p.add_argument('--query',help="free-text search query, space-separated. Example \"@friend Cool stuff #awesome\"  ")
+        self.args = p.parse_args()
 
-client_key = args.client_key
-client_secret = args.client_secret
-base_url= args.base_url
-user = args.user
-password = args.password
-handle = args.handle
+    def login(self):
+        '''logon to mastodon'''
 
-query_raw = args.query.split(" ")
+        client_key = self.args.client_key
+        client_secret = self.args.client_secret
+        base_url= self.args.base_url
+        user = self.args.user
+        password = self.args.password
+
+        self.mastodon = mastodon.Mastodon(client_id=client_key,
+                                          client_secret=client_secret,
+                                          api_base_url=base_url)
+        self.mastodon.log_in(user, password, scopes=['read'])
+
+    def getTootsOfUser(self, handle):
+        ''' Recent toots of user `handle` '''
+        #handle = self.args.handle
+        account = self.mastodon.search(handle)['accounts'][0]
+        return self.mastodon.account_statuses(account['id'])
+
+    def getHomeToots(self):
+        return self.mastodon.timeline_home()
+
+    def getPublicToots(self):
+        return self.mastodon.timeline_local()
+
+    def getQuery(self):
+        return self.args.query.split(" ")
+
+user_interface = UserInterface()
+user_interface.login()
+
+query_raw = user_interface.getQuery()
 
 print("searching for terms: ", ", ".join(query_raw))
+
+
 
 
 # parameters for the information retrieval model (BM25)
@@ -57,13 +86,6 @@ min_query_matches = 1  # adjust how many terms must be in a toot for it to show 
 query_terms = [q.lower() for q in query_raw]  # normalize query terms for searching
 
 
-# logon to mastodon
-
-m = mastodon.Mastodon(client_id=client_key,
-                      client_secret=client_secret,
-                      api_base_url=base_url)
-m.log_in(user, password, scopes=['read'])
-account = m.search(handle)['accounts'][0]
 
 
 
@@ -74,14 +96,14 @@ account = m.search(handle)['accounts'][0]
 docfreqs = {q:0 for q in query_terms}
 doc_lens = []
 
-for toot in m.account_statuses(account['id']):
+for toot in user_interface.getHomeToots():
     text = strip_tags(toot['content'])
     for q in query_terms:
         docfreqs[q] += text.count(q)
     doc_lens.append(text.count(" "))
 
 avgdl = sum(doc_lens) / len(doc_lens)
-total_toots = len(m.account_statuses(account['id']))
+total_toots = len(user_interface.getHomeToots())
 
 
 # Implementation of the BM25 retrieval model
@@ -105,7 +127,7 @@ def bm25_score(toot):
         return None
 
 # fetch and score toots, kick out dropped toots (None)
-scoredToots = [(toot, bm25_score(toot)) for toot in m.account_statuses(account['id'])]
+scoredToots = [(toot, bm25_score(toot)) for toot in user_interface.getHomeToots()]
 scoredToots = [ pair for  pair in scoredToots if pair[1] is not None]
 
 # sort descendingly by search score
