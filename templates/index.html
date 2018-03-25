@@ -7,24 +7,25 @@
 
   <body>
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between">
-        <a class="navbar-brand" href="#">Mastodon Query</a>
+        <a class="navbar-brand" href="#">Soot - Search on toots: </a>
         <form action="/query" class="form-inline">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{{query}}">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
         </form>
     </nav>
 
-    <div id="results" >
-    {% for toot in toots %}
+    <div id="results"><ul>
+        {% for toot in toots %}
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">@{{ toot['author'] }}</h5>
-                <p class="card-text">{{ toot['content']  |safe  }}</p>
+                <a href="{{toot['uri']}}">View <img src="/static/Logotype (Simple).svg" alt="on Mastodon" style="width:2em;"></a>
+                <h5 class="card-title">@{{ toot['author'] }}  {{ toot['verb'] }}:  </h5>
+                <div class="card-text">  {{ toot['content']  |safe  }} </div>
             </div>
         </div>
     {% endfor %}
-    </div>
     </ul>
+    </div>
   </body>
 </html>
 

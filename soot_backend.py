@@ -2,7 +2,7 @@ import mastodon
 from html.parser import HTMLParser
 import argparse
 import math
-
+from credentials import Credentials
 
 class MLStripper(HTMLParser):
     def __init__(self):
@@ -24,8 +24,9 @@ def strip_tags(html):
 
 # Configure command line arguments
 
+creds = Credentials("soot")
 
-class UserInterface():
+class UserRegistration():
     def __init__(self):
         self.client_key='..'
         self.client_secret='..'
@@ -33,7 +34,7 @@ class UserInterface():
         self.user='..'
         self.password='..'
 
-    def login(self):
+    def register(self):
         '''logon to mastodon'''
 
         client_key = self.client_key
@@ -42,10 +43,16 @@ class UserInterface():
         user = self.user
         password = self.password
 
-        self.mastodon = mastodon.Mastodon(client_id=client_key,
+        masto = mastodon.Mastodon(client_id=client_key,
                                           client_secret=client_secret,
                                           api_base_url=base_url)
-        self.mastodon.log_in(user, password, scopes=['read'])
+        masto.log_in(user, password, scopes=['read'])
+        return masto
+
+
+class UserInterface():
+    def __init__(self, masto):
+        self.mastodon=masto
 
     def getTootsOfUser(self, handle):
         ''' Recent toots of user `handle` '''
@@ -127,8 +134,7 @@ class Searcher():
 
 
 
-def login_crawl_and_search(user_interface, query_raw):
-    user_interface.login()
+def crawl_and_search(user_interface, query_raw):
 
     # Fetch the search query
     print("searching for terms: ", ", ".join(query_raw))

@@ -2,6 +2,8 @@ import mastodon
 from html.parser import HTMLParser
 import argparse
 import math
+from credentials import Credentials
+
 from soot_backend import *
 
 p = argparse.ArgumentParser("soot-bm25", description="Mastodon search interface prototype!"
@@ -17,10 +19,15 @@ p.add_argument('--query',help="free-text search query, space-separated. Example 
 args = p.parse_args()
 
 
-class CmdLineUI(UserInterface):
-    def __init__(self):
+creds = Credentials("mastodon.social")
+# creds.client_register()
+# creds.user_register(args.user, args.password)
+masto = creds.get_new_session()
 
-        super().__init__()
+class CmdLineUI(UserInterface):
+    def __init__(self, mastodon):
+
+        super().__init__(mastodon)
         self.client_key=args.client_key
         self.client_secret=args.client_secret
         self.base_url=args.base_url
@@ -29,11 +36,11 @@ class CmdLineUI(UserInterface):
 
 
 # Logon to mastodon
-user_interface = CmdLineUI()
+user_interface = CmdLineUI(masto)
 
 
 
-scoredToots = login_crawl_and_search(user_interface, args.query.split(" "))
+scoredToots = crawl_and_search(user_interface, args.query.split(" "))
 # poor woman's ugly output of relevant toots
 for (toot, score) in scoredToots[0:10]:
     print (f"({score}, id: {toot['id']})  {toot['content']} \n")

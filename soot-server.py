@@ -5,8 +5,8 @@ app = Flask(__name__)
 
 
 class FlaskUI(UserInterface):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, mastodon):
+        super().__init__(mastodon)
         p = argparse.ArgumentParser("soot-flask", description="Mastodon search interface prototype!"
                                                              "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
         p.add_argument('--client-key', help=' and get client key')
@@ -24,10 +24,16 @@ class FlaskUI(UserInterface):
         self.password=args.password
 
 
-user_interface = FlaskUI()
+creds = Credentials("mastodon.social")
+# creds.client_register()
+# creds.user_register(args.user, args.password)
+masto = creds.get_new_session()
 
 
-user_interface.login()
+user_interface = FlaskUI(masto)
+
+
+# user_interface.login()
 
 
 @app.route('/')
@@ -38,7 +44,7 @@ def index():
 def query():
     query_raw = request.args['q'].split(" ")
 
-    # Fetch the search query
+    # Fetchh the search query
     # query_raw = "@deeds people"# response.args.query
     print("searching for terms: ", query_raw)
     # parameters for the information retrieval model (BM25)
@@ -50,14 +56,30 @@ def query():
     searcher = Searcher()
     searcher.seed_background_model(user_interface.getHomeToots(), query_terms)
 
+    def getVerb(toot):
+        if toot['reblog'] is not None:
+             return "boosted"
+        elif (toot['in_reply_to_id'] is not None):
+            return "replied"
+        else:
+            return "tooted"
+
 
     # rank toots by relevance
     scoredToots = searcher.rank(user_interface.getHomeToots(), query_terms)
-    toot_ranking = [{'content':toot['content'], 'author': toot['account']['username']} for (toot,score) in scoredToots]
-    print(toot_ranking)
+    for (toot, score) in scoredToots[0:10]:
+        print(toot)
+
+
+    toot_ranking = [{'content': toot['content']
+                        , 'author': toot['account']['username']
+                        , 'uri':toot['url']
+                        , 'verb':getVerb(toot)
+                     } for (toot,score) in scoredToots if not toot['muted']]
+
 
     #return render_template('search-ninja.html', query=" ".join(query_terms), result=toot_ranking)
-    return render_template('index.html', toots=toot_ranking, query=request.args['q'])
+    return render_template('index.html', toots=toot_ranking, query=request.args['q'], base_url=user_interface.base_url)
 
 
 
