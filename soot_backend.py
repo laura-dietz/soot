@@ -32,7 +32,6 @@ class UserInterface():
         self.base_url='..'
         self.user='..'
         self.password='..'
-        self.query='..'
 
     def login(self):
         '''logon to mastodon'''
@@ -60,8 +59,6 @@ class UserInterface():
     def getPublicToots(self):
         return self.mastodon.timeline_local()
 
-    def getQuery(self):
-        return self.query.split(" ")
 
 
 
@@ -130,11 +127,10 @@ class Searcher():
 
 
 
-def login_crawl_and_search(user_interface):
+def login_crawl_and_search(user_interface, query_raw):
     user_interface.login()
 
     # Fetch the search query
-    query_raw = user_interface.getQuery()
     print("searching for terms: ", ", ".join(query_raw))
     # parameters for the information retrieval model (BM25)
     query_terms = [q.lower() for q in query_raw]  # normalize query terms for searching

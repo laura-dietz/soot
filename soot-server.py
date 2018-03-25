@@ -3,10 +3,6 @@ from soot_backend import *
 
 app = Flask(__name__)
 
-# @app.route("/")
-# def soot_search():
-#     return "Hello World!"
-
 
 class FlaskUI(UserInterface):
     def __init__(self):
@@ -26,10 +22,7 @@ class FlaskUI(UserInterface):
         self.base_url=args.base_url
         self.user=args.user
         self.password=args.password
-        self.query='..'
 
-    def set_query(self, query):
-        self.query = query
 
 user_interface = FlaskUI()
 
@@ -44,20 +37,6 @@ def index():
 @app.route('/query')
 def query():
     query_raw = request.args['q'].split(" ")
-#     results = []
-#     for toot in toots:
-#         if query in toot['content']:
-#             results.append({
-#                 'content': strip_tags(toot['content']),
-#                 'author': toot['account']['username']
-#             })
-#
-#     return flask.render_template('index.html', toots=results, query=query)
-#
-#
-#
-# @app.route("/")
-# def soot_result():
 
     # Fetch the search query
     # query_raw = "@deeds people"# response.args.query
@@ -74,10 +53,12 @@ def query():
 
     # rank toots by relevance
     scoredToots = searcher.rank(user_interface.getHomeToots(), query_terms)
-    toot_ranking = [{'href':"http://no-idea/", 'caption':toot['content']} for (toot,score) in scoredToots]
+    toot_ranking = [{'content':toot['content'], 'author': toot['account']['username']} for (toot,score) in scoredToots]
     print(toot_ranking)
 
-    return render_template('search-ninja.html', query=" ".join(query_terms), result=toot_ranking)
+    #return render_template('search-ninja.html', query=" ".join(query_terms), result=toot_ranking)
+    return render_template('index.html', toots=toot_ranking, query=request.args['q'])
+
 
 
 app.run()
