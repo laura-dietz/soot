@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Soot Results</title>
+</head>
+<body>
+{{ query }}
+
+<ul id="result">
+    {% for item in result %}
+    <li><a href="{{ item.href }}">{{ item.caption }}</a></li>
+    {% endfor %}
+</ul>
+
+</body>
+</html>
