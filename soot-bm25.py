@@ -132,24 +132,28 @@ class Searcher():
 
 
 
+# Logon to mastodon
 user_interface = UserInterface()
 user_interface.login()
 
+# Fetch the search query
 query_raw = user_interface.getQuery()
-
 print("searching for terms: ", ", ".join(query_raw))
-
-
 # parameters for the information retrieval model (BM25)
 query_terms = [q.lower() for q in query_raw]  # normalize query terms for searching
 
+
+# Create search model and initialize statistics
+# Currently only statistics for this query are collected
 searcher = Searcher()
 searcher.seed_background_model(user_interface.getHomeToots(), query_terms)
 
+
+# rank toots by relevance
 scoredToots = searcher.rank(user_interface.getHomeToots(), query_terms)
 
 
-# print
+# poor woman's ugly output of relevant toots
 for (toot, score) in scoredToots[0:10]:
     print (f"({score}, id: {toot['id']})  {toot['content']} \n")
 
