@@ -28,9 +28,58 @@ creds = Credentials("soot")
 class TootInterface():
     def __init__(self, masto):
         self.mastodon=masto
+    #     self.home_toots=None
+    #     self.recent_home_toot=None
+    #     self.timestamp = None
+    #
+    # def nextPages(self, first_page, countdown):
+    #     if not countdown:
+    #         return []
+    #     second_page = self.mastodon.fetch_next(first_page)
+    #     if(second_page is not None):
+    #         return second_page + self.nextPages(second_page, countdown - 1)
+    #     else:
+    #         return []
+    #
+    #
+    # def nextPagesUntilId(self, first_page, until_id, countdown):
+    #     if not countdown:
+    #         return []
+    #     oldest_toot_id = first_page[-1]['id']
+    #     print('oldest_toot_id', oldest_toot_id)
+    #     if oldest_toot_id <= until_id:
+    #         return []
+    #     second_page = self.mastodon.fetch_next(first_page)
+    #     if(second_page is not None):
+    #         pages_until_id = self.nextPagesUntilId(second_page, until_id, countdown - 1)
+    #         return second_page + pages_until_id
+    #     else:
+    #         return []
+    #
+    #
+    # def firstFetchHomeToots(self):
+    #     first_page = self.mastodon.timeline_home()
+    #     return first_page + self.nextPages(first_page, 3)
+    #
+    # def updateFetchHomeToots(self, since_id):
+    #     first_page = self.mastodon.timeline_home(since_id=since_id)
+    #     return first_page + self.nextPagesUntilId(first_page,since_id, 3)
+    #
+    # def getHomeToots(self):
+    #     if self.home_toots is None or datetime.self.timestamp == datetime.now():
+    #         self.home_toots = self.firstFetchHomeToots()
+    #         if len(self.home_toots):
+    #             self.recent_home_toot = self.home_toots[0]
+    #     else:
+    #         until_id = self.recent_home_toot
+    #         update = [toot for toot in self.updateFetchHomeToots(until_id) if toot['id']> until_id]
+    #         self.home_toots = update + self.home_toots
+    #         self.recent_home_toot = self.home_toots[0]
+    #     return self.home_toots
+
 
     def getHomeToots(self):
-        return self.mastodon.timeline_home()
+        return self.mastodon.timeline_home(limit=100)
 
     def getPublicToots(self):
         return self.mastodon.timeline_local()
