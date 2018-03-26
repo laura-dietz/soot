@@ -20,7 +20,7 @@ run `pip install`
 # Usage
 Run the server.py to bring up the web server.
 
-Debug Script: Run `pyton soot-bm25.py -h` and follow instructions
+Debug Script: Run `phyton soot-bm25.py -h` and follow instructions
 
 # Changes
 
@@ -31,5 +31,4 @@ Debug Script: Run `pyton soot-bm25.py -h` and follow instructions
 - BM25 retrieval model on substrings
 - No indexing, no caching
 - Searches only 100 most recent posts in home timeline
-
 
