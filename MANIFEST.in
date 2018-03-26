@@ -1,0 +1,2 @@
+graft soot/templates
+graft soot/static

@@ -1,15 +1,10 @@
 from flask import Flask, render_template, request , redirect, session
-from soot_backend import *
+from soot.backend import *
 
 app = Flask(__name__)
-app.secret_key=creds.get_secret_session_key()
 
 global masto
 
-
-creds = Credentials("mastodon.social")
-if not creds.is_client_registered():
-    creds.client_register()
 
 def is_authenticated():
     return session.get('access_token') is not None
@@ -90,5 +85,15 @@ def query():
     return render_template('index.html', toots=toot_ranking, query=request.args['q'], base_url=creds.domain, registered=is_authenticated())
 
 
+def main():
+    global creds
 
-app.run(host="0.0.0.0")
+    creds = Credentials("mastodon.social")
+    if not creds.is_client_registered():
+        creds.client_register()
+
+    app.secret_key = creds.get_secret_session_key()
+    app.run(host="0.0.0.0")
+
+if __name__ == '__main__':
+    main()

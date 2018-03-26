@@ -2,7 +2,7 @@ import mastodon
 from html.parser import HTMLParser
 import argparse
 import math
-from credentials import Credentials
+from soot.credentials import Credentials
 
 class MLStripper(HTMLParser):
     def __init__(self):

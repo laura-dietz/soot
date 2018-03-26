@@ -1,5 +1,5 @@
 from mastodon import Mastodon
-import config
+from soot import config
 import keyring
 import random
 

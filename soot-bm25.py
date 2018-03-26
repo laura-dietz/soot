@@ -2,9 +2,9 @@ import mastodon
 from html.parser import HTMLParser
 import argparse
 import math
-from credentials import Credentials
+from soot.credentials import Credentials
 
-from soot_backend import *
+from soot.backend import *
 
 p = argparse.ArgumentParser("soot-bm25", description="Mastodon search interface prototype!"
                                                      "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
