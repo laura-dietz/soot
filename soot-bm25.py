@@ -24,7 +24,7 @@ creds = Credentials("scholar.social")
 # creds.user_register(args.user, args.password)
 masto = creds.get_new_session()
 
-class CmdLineUI(UserInterface):
+class CmdLineUI(TootInterface):
     def __init__(self, mastodon):
 
         super().__init__(mastodon)
