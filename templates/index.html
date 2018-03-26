@@ -6,12 +6,18 @@
   </head>
 
   <body>
+   {% if registered %}
+
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between">
         <a class="navbar-brand" href="#">Soot - Search on toots: </a>
         <form action="/query" class="form-inline">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q" value="{{query}}">
             <button class="btn btn-primary my-2 my-sm-0" type="submit">Search</button>
         </form>
+        <form action="/logout" class="form-inline">
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Logout</button>
+        </form>
+
     </nav>
 
     <div id="results"><ul>
@@ -26,6 +32,51 @@
     {% endfor %}
     </ul>
     </div>
+
+  {% else %}
+
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between">
+       <a class="navbar-brand" href="#">Soot - Search on toots! </a>
+   </nav>
+
+   <!--<p>By logging in you grant permission to read-access of your personal timeline.</p>-->
+  <!--<form action="/register_client" class="form-inline">-->
+      <!--<button class="btn btn-primary my-2 my-sm-0" type="submit">Register Client</button>-->
+  <!--</form>-->
+
+  <div>
+      <p><a target="_blank" href="/register">Confirm read access to your account.</a>, then copy access token in form below.</p>
+
+      <p><form action="/authenticate" class="form-inline">
+      <input class="form-control mr-sm-2" type="password" placeholder="Access token" aria-label="Access token" name="access_token" value="">
+      <button class="btn btn-primary my-2 my-sm-0" type="submit">Confirm</button>
+  </form></p>
+  </div>
+
+  <!--<div>-->
+      <!--<p>copy access token.</p>-->
+
+      <!--<p><form action="/access_token" class="form-inline">-->
+      <!--<input class="form-control mr-sm-2" type="password" placeholder="Access token" aria-label="Access token" name="access_token" value="">-->
+      <!--<button class="btn btn-primary my-2 my-sm-0" type="submit">Access Token</button>-->
+  <!--</form></p>-->
+  <!--</div>-->
+
+  <div>
+  <form action="/login" class="form-inline">
+       <input class="form-control mr-sm-2" type="text" placeholder="User" aria-label="Login" name="user" value="">
+       <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="Password" name="password" value="">
+       <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
+   </form>
+  </div>
+
+   <p>Your toots will not be shared.</p>
+   <p>Your toots will not be stored.</p>
+   <p>You can only search your local toots.</p>
+
+
+  {% endif %}
+
   </body>
 </html>
 

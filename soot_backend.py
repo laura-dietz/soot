@@ -25,29 +25,29 @@ def strip_tags(html):
 # Configure command line arguments
 
 creds = Credentials("soot")
-
-class UserRegistration():
-    def __init__(self):
-        self.client_key='..'
-        self.client_secret='..'
-        self.base_url='..'
-        self.user='..'
-        self.password='..'
-
-    def register(self):
-        '''logon to mastodon'''
-
-        client_key = self.client_key
-        client_secret = self.client_secret
-        base_url= self.base_url
-        user = self.user
-        password = self.password
-
-        masto = mastodon.Mastodon(client_id=client_key,
-                                          client_secret=client_secret,
-                                          api_base_url=base_url)
-        masto.log_in(user, password, scopes=['read'])
-        return masto
+#
+# class UserRegistration():
+#     def __init__(self):
+#         self.client_key='..'
+#         self.client_secret='..'
+#         self.base_url='..'
+#         self.user='..'
+#         self.password='..'
+#
+#     def register(self):
+#         '''logon to mastodon'''
+#
+#         client_key = self.client_key
+#         client_secret = self.client_secret
+#         base_url= self.base_url
+#         user = self.user
+#         password = self.password
+#
+#         masto = mastodon.Mastodon(client_id=client_key,
+#                                           client_secret=client_secret,
+#                                           api_base_url=base_url)
+#         masto.log_in(user, password, scopes=['read'])
+#         return masto
 
 
 class UserInterface():

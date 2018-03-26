@@ -23,61 +23,128 @@ import config
 import keyring
 
 
+
 class Credentials:
-
-    def __init__(self, domain):
-        self.id_client = "cid-" + domain
-        self.secret_client = "csec-" + domain
-        self.secret_user = "usec-" + domain
+    def __init__(self,domain, config = config.Config()):
         self.domain = domain
-        self.config = config.Config()
+        self.config = config
+        self.id_client = "soot-client-id"
+        self.secret_client = "soot-client-secret"
+        self.access_token = None
 
-    def is_client_registered(self):
-        return keyring.get_password(self.config.APP_NAME, self.id_client) is not None and \
-               keyring.get_password(self.config.APP_NAME, self.secret_client) is not None
 
     def client_register(self):
         if not self.is_client_registered():
             client_id, client_secret = Mastodon.create_app(self.config.APP_NAME,
                                                            api_base_url=self.domain,
-                                                           scopes=['read', 'write', 'follow'],
+                                                           scopes=['read'],
                                                            website=self.config.APP_WEBSITE)
             keyring.set_password(self.config.APP_NAME, self.id_client, client_id)
             keyring.set_password(self.config.APP_NAME, self.secret_client, client_secret)
 
-    def is_user_registered(self):
-        return keyring.get_password(self.config.APP_NAME, self.secret_user) is not None
+    def get_client_id(self):
+            return keyring.get_password(self.config.APP_NAME, self.id_client)
 
-    def user_register(self, cusername=None, cpassword=None):
-        if not self.is_client_registered():
-            raise Exception("Client app has not been registered for this domain yet")
+    def get_client_secret(self):
+            return keyring.get_password(self.config.APP_NAME, self.secret_client)
 
-        if not self.is_user_registered():
-            mastodon = Mastodon(
-                client_id=keyring.get_password(self.config.APP_NAME, self.id_client),
-                client_secret=keyring.get_password(self.config.APP_NAME, self.secret_client),
-                api_base_url=self.domain
-            )
 
-            user_secret = mastodon.log_in(
-                username=cusername,
-                password=cpassword,
-                scopes=['read', 'write', 'follow']
-            )
-            keyring.set_password(self.config.APP_NAME, self.secret_user, user_secret)
+    def is_client_registered(self):
+        return keyring.get_password(self.config.APP_NAME, self.id_client) is not None and \
+               keyring.get_password(self.config.APP_NAME, self.secret_client) is not None \
 
-    def get_new_session(self):
-        if not self.is_client_registered():
-            raise Exception("Client app has not been registered for this domain yet")
 
-        if not self.is_user_registered():
-            raise Exception("User has not authenticated with this domain yet")
 
-        return Mastodon(client_id=keyring.get_password(self.config.APP_NAME, self.id_client),
-                        client_secret=keyring.get_password(self.config.APP_NAME, self.secret_client),
-                        access_token=keyring.get_password(self.config.APP_NAME, self.secret_user),
-                        api_base_url=self.domain
-                        )
 
-    def user_logout(self):
-        keyring.delete_password(self.config.APP_NAME, self.secret_user)
+    def sent_oauth_register(self):
+        masto = self.dummy_masto()#Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), api_base_url=self.domain)
+        access_url = masto.auth_request_url(client_id=self.get_client_id(), scopes=['read'])
+        return access_url
+
+    def store_access_token(self, access_token):
+        self.access_token = access_token
+
+    def is_authenticated(self):
+        print("authenticated?", self.access_token)
+        return self.access_token is not None
+
+    def dummy_masto(self):
+        return Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), api_base_url=self.domain, debug_requests=True)
+
+    def create_masto(self,access_token = None):
+        return Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), access_token=self.access_token, api_base_url=self.domain, debug_requests=True)
+            # return Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), access_token=access_token)
+
+
+
+#
+#
+# class OldCredentials:
+#
+#     def __init__(self, domain):
+#         self.id_client = "cid-" + domain
+#         self.secret_client = "csec-" + domain
+#         self.secret_user = "usec-" + domain
+#         self.domain = domain
+#         self.config = config.Config()
+#
+#     def is_client_registered(self):
+#         return keyring.get_password(self.config.APP_NAME, self.id_client) is not None and \
+#                keyring.get_password(self.config.APP_NAME, self.secret_client) is not None
+#
+#     def client_register(self):
+#         if not self.is_client_registered():
+#             client_id, client_secret = Mastodon.create_app(self.config.APP_NAME,
+#                                                            api_base_url=self.domain,
+#                                                            scopes=['read', 'write', 'follow'],
+#                                                            website=self.config.APP_WEBSITE, redirect_uris=["http://home.smart-cactus.org:5001"])
+#             keyring.set_password(self.config.APP_NAME, self.id_client, client_id)
+#             keyring.set_password(self.config.APP_NAME, self.secret_client, client_secret)
+#
+#     def is_user_registered(self):
+#         return keyring.get_password(self.config.APP_NAME, self.secret_user) is not None
+#
+#
+#     def sent_oauth_register(self):
+#         masto = Mastodon(client_id=self.id_client, client_secret=self.secret_client)
+#         access_url = masto.auth_request_url(client_id=self.id_client, scopes=['read'])
+#         return access_url
+#
+#
+#     def create_masto(self, access_token):
+#         return Mastodon(client_id=self.id_client, client_secret=self.secret_client, access_token=access_token)
+#
+#
+#     def user_register(self, cusername=None, cpassword=None):
+#         if not self.is_client_registered():
+#             raise Exception("Client app has not been registered for this domain yet")
+#
+#         if not self.is_user_registered():
+#             mastodon = Mastodon(
+#                 client_id=keyring.get_password(self.config.APP_NAME, self.id_client),
+#                 client_secret=keyring.get_password(self.config.APP_NAME, self.secret_client),
+#                 api_base_url=self.domain
+#             )
+#
+#             user_secret = mastodon.log_in(
+#                 username=cusername,
+#                 password=cpassword,
+#                 scopes=['read']
+#             )
+#             keyring.set_password(self.config.APP_NAME, self.secret_user, user_secret)
+#
+#     def get_new_session(self):
+#         if not self.is_client_registered():
+#             raise Exception("Client app has not been registered for this domain yet")
+#
+#         if not self.is_user_registered():
+#             raise Exception("User has not authenticated with this domain yet")
+#
+#         return Mastodon(client_id=keyring.get_password(self.config.APP_NAME, self.id_client),
+#                         client_secret=keyring.get_password(self.config.APP_NAME, self.secret_client),
+#                         access_token=keyring.get_password(self.config.APP_NAME, self.secret_user),
+#                         api_base_url=self.domain
+#                         )
+#
+#     def user_logout(self):
+#         keyring.delete_password(self.config.APP_NAME, self.secret_user)

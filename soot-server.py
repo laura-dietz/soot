@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request , redirect
 from soot_backend import *
 
 app = Flask(__name__)
 
+global masto
 
 class FlaskUI(UserInterface):
     def __init__(self, mastodon):
@@ -27,22 +28,105 @@ class FlaskUI(UserInterface):
 creds = Credentials("mastodon.social")
 # creds.client_register()
 # creds.user_register(args.user, args.password)
-masto = creds.get_new_session()
 
 
-user_interface = FlaskUI(masto)
+def is_registered():
+    return creds.is_authenticated() #and creds.is_user_registered()
 
+#
+# if is_registered():
+#     masto = creds.get_new_session()
+# else:
+#     creds.client_register()
+#     masto = creds.get_new_session()
 
 # user_interface.login()
 
-
 @app.route('/')
 def index():
-    return render_template('index.html', results=[], query=None)
+    return render_template('index.html', results=[], query=None, registered=creds.is_authenticated())
+
+
+@app.route('/register')
+def register():
+    print("Request auth: ", creds.sent_oauth_register())
+    return redirect(creds.sent_oauth_register())
+
+
+
+
+@app.route('/authenticate')
+def authenticate():
+    auth_code = request.args['access_token']
+    masto = creds.dummy_masto()
+    access_token = masto.log_in(code=auth_code, scopes=['read'], to_file="soot.token")
+
+    creds.store_access_token(access_token)
+
+
+    return render_template('index.html', results=[], query=None, is_registered=creds.is_authenticated())
+
+
+#
+# @app.route('/access_token')
+# def access_token():
+#     access_token = request.args['access_token']
+#     creds.store_access_token(access_token)
+#     masto = creds.create_masto(access_token)
+#
+#
+#     return render_template('index.html', results=[], query=None, is_registered=creds.is_authenticated())
+
+
+#
+#
+#
+# @app.route('/auth_token')
+# def auth_token():
+#     print("auth token")
+#     print(request.args)
+#
+
+
+
+@app.route('/logout')
+def logout():
+    creds.store_access_token(None)
+    masto = creds.dummy_masto()
+    return render_template('index.html', results=[], query=None, registered=is_registered())
+
+#
+# @app.route('/register_client')
+# def clientregister():
+#     creds.client_register()
+#     return render_template('index.html', results=[], query=None, is_registered=is_registered())
+#
+#
+# @app.route('/register')
+# def register():
+#     user = request.args['user']
+#     passwd = request.args['password']
+#     creds.client_register()
+#     creds.user_register(user, passwd)
+#     return render_template('index.html', results=[], query=None, is_registered=is_registered())
+#
+
+
+
+
 
 @app.route('/query')
 def query():
     query_raw = request.args['q'].split(" ")
+
+    print("access token", creds.access_token)
+
+    masto = creds.create_masto()
+
+    print ("masto.access_token", masto.access_token)
+
+    user_interface = FlaskUI(masto)
+
 
     # Fetchh the search query
     # query_raw = "@deeds people"# response.args.query
@@ -79,8 +163,8 @@ def query():
 
 
     #return render_template('search-ninja.html', query=" ".join(query_terms), result=toot_ranking)
-    return render_template('index.html', toots=toot_ranking, query=request.args['q'], base_url=user_interface.base_url)
+    return render_template('index.html', toots=toot_ranking, query=request.args['q'], base_url=user_interface.base_url, registered=creds.is_authenticated())
 
 
 
-app.run()
+app.run(host="0.0.0.0")
