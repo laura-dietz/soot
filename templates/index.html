@@ -27,7 +27,7 @@
                     {% for toot in toots %}
                         <div class="card">
                             <div class="card-body">
-                                <a href="{{toot['uri']}}">View <img src="/static/Logotype (Simple).svg" alt="on Mastodon" style="width:2em;"></a>
+                                <a href="{{toot['uri']}}">View <img src="/static/logotype-simple.svg" alt="on Mastodon" style="width:2em;"></a>
                                 <h5 class="card-title">@{{ toot['author'] }}  {{ toot['verb'] }}:  </h5>
                                 <div class="card-text">  {{ toot['content']  |safe  }} </div>
                             </div>
