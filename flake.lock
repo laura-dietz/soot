@@ -1,0 +1,59 @@
+{
+  "nodes": {
+    "flake-utils": {
+      "locked": {
+        "lastModified": 1667395993,
+        "narHash": "sha256-nuEHfE/LcWyuSWnS8t12N1wc105Qtau+/OdUAjtQ0rA=",
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "rev": "5aed5285a952e0b949eb3ba02c12fa4fcfef535f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "flake-utils",
+        "type": "github"
+      }
+    },
+    "mastodon-py": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1659946061,
+        "narHash": "sha256-A+Yp62VRrI7sBJSEOT7YEqLtxsbndRBVGpxvqbgNHgk=",
+        "owner": "halcy",
+        "repo": "Mastodon.py",
+        "rev": "89a6bd2baca4e651440402773393c19f74ee0993",
+        "type": "github"
+      },
+      "original": {
+        "owner": "halcy",
+        "repo": "Mastodon.py",
+        "rev": "89a6bd2baca4e651440402773393c19f74ee0993",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1667292599,
+        "narHash": "sha256-7ISOUI1aj6UKMPIL+wwthENL22L3+A9V+jS8Is3QsRo=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ef2f213d9659a274985778bff4ca322f3ef3ac68",
+        "type": "github"
+      },
+      "original": {
+        "id": "nixpkgs",
+        "type": "indirect"
+      }
+    },
+    "root": {
+      "inputs": {
+        "flake-utils": "flake-utils",
+        "mastodon-py": "mastodon-py",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
