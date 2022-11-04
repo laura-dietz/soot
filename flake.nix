@@ -40,7 +40,15 @@
         defaultApp = apps.soot;
       }
     ) // {
-      nixosModules.soot = {
+      nixosModules.soot = let port = 6600; in {
+        services.nginx.virtualHosts."soot.smart-cactus.org" = {
+          locations."/".proxyPass = "http://localhost:${toString port}";
+        };
+
+        systemd.services.soot = {
+          description = "Soot server";
+          script = "${self.packages.x86_64-linux.soot}/bin/soot-server";
+        };
       };
     };
 }

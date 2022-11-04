@@ -12,6 +12,7 @@ setup(
     entry_points = {
         'console_scripts': [
             'soot-server=soot.server:main',
+            'soot-bm25=soot.bm25:main',
         ]
     },
     include_package_data = True,
