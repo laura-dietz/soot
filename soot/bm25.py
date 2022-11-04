@@ -7,7 +7,7 @@ from soot.credentials import Credentials
 from soot.backend import *
 
 class CmdLineUI(TootInterface):
-    def __init__(self, mastodon):
+    def __init__(self, mastodon, args):
         super().__init__(mastodon)
         self.client_key=args.client_key
         self.client_secret=args.client_secret
@@ -30,12 +30,13 @@ def main():
 
 
     creds = Credentials("scholar.social")
-    # creds.client_register()
-    # creds.user_register(args.user, args.password)
-    masto = creds.get_new_session()
+    creds.client_register()
+    #creds.user_register(args.user, args.password)
+    masto = creds.create_masto(args.access_token)
+    #masto = creds.sessget_new_session()
 
     # Logon to mastodon
-    user_interface = CmdLineUI(masto)
+    user_interface = CmdLineUI(masto, args)
 
 
 
