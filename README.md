@@ -15,7 +15,7 @@ setup.py install
 
 git clone this repository
 cd into repository
-run `pip install`
+run `pip install .`
 
 # Usage
 Run the server.py to bring up the web server.
