@@ -44,4 +44,5 @@ def main():
     for (toot, score) in scoredToots[0:10]:
         print (f"({score}, id: {toot['id']})  {toot['content']} \n")
 
-
+if __name__ == '__main__':
+    main()
