@@ -20,8 +20,6 @@ def register():
     return redirect(creds.sent_oauth_register())
 
 
-
-
 @app.route('/authenticate')
 def authenticate():
     auth_code = request.args['access_token']
@@ -88,12 +86,24 @@ def query():
 def main():
     global creds
 
-    creds = Credentials("mastodon.social")
+    p = argparse.ArgumentParser("soot-bm25-server", description="Mastodon web search interface"
+                                                         "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
+
+    p.add_argument('--access-token', help='client access token')
+    p.add_argument('--base-url', help="base url of your mastodon instance", default="mastodon.social",)
+    p.add_argument('--host',help="public facing web hostname", default='0.0.0.0')
+    p.add_argument('--port',help="public facing web port", default=5000)
+    args = p.parse_args()
+
+
+
+    creds = Credentials(args.base_url)
     if not creds.is_client_registered():
         creds.client_register()
 
     app.secret_key = creds.get_secret_session_key()
-    app.run(host="0.0.0.0")
+    app.run(host=args.host, port=args.port)
+    
 
 if __name__ == '__main__':
     main()
