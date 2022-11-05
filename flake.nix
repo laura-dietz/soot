@@ -48,6 +48,9 @@
         systemd.services.soot = {
           description = "Soot server";
           script = "${self.packages.x86_64-linux.soot}/bin/soot-server";
+          environment = {
+            "PYTHON_KEYRING_BACKEND" = "keyring.backends.null.Keyring";
+          };
         };
       };
     };
