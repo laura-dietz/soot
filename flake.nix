@@ -36,8 +36,8 @@
           };
         };
         defaultPackage = packages.soot;
-        apps.soot = flake-utils.lib.mkApp { drv = packages.soot; };
-        defaultApp = apps.soot;
+        apps.soot-server = flake-utils.lib.mkApp { drv = packages.soot; exePath = "/bin/soot-server"; };
+        defaultApp = apps.soot-server;
       }
     ) // {
       nixosModules.soot = let port = 6600; in {
@@ -48,6 +48,9 @@
         systemd.services.soot = {
           description = "Soot server";
           script = "${self.packages.x86_64-linux.soot}/bin/soot-server";
+          environment = {
+            "PYTHON_KEYRING_BACKEND" = "keyring.backends.null.Keyring";
+          };
         };
       };
     };
