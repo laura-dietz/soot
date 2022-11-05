@@ -1,7 +1,10 @@
 from flask import Flask, render_template, request , redirect, session
 from soot.backend import *
 
+DEFAULT_BASE_URL = 'https://mastodon.social'
+
 app = Flask(__name__)
+app.config['CREDS'] = Credentials(DEFAULT_BASE_URL)
 
 def is_authenticated():
     return session.get('access_token') is not None
@@ -77,7 +80,7 @@ def main():
                                                          "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
 
     p.add_argument('--access-token', help='client access token')
-    p.add_argument('--base-url', help="base url of your mastodon instance", default="mastodon.social",)
+    p.add_argument('--base-url', help="base url of your mastodon instance", default=DEFAULT_BASE_URL)
     p.add_argument('--host',help="public facing web hostname", default='0.0.0.0')
     p.add_argument('--port',help="public facing web port", default=5000)
     args = p.parse_args()
