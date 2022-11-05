@@ -40,18 +40,29 @@
         defaultApp = apps.soot-server;
       }
     ) // {
-      nixosModules.soot = let port = 6600; in {
-        services.nginx.virtualHosts."soot.smart-cactus.org" = {
-          locations."/".proxyPass = "http://localhost:${toString port}";
-        };
+      nixosModules.soot = {config, ...}:
+        let port = 6600;
+            socket = "${config.services.uwsgi.runDir}/soot.sock";
+        in {
+          services.nginx.virtualHosts."soot.smart-cactus.org" = {
+            locations."/".proxyPass = "unix://${socket}";
+          };
 
-        systemd.services.soot = {
-          description = "Soot server";
-          script = "${self.packages.x86_64-linux.soot}/bin/soot-server";
-          environment = {
-            "PYTHON_KEYRING_BACKEND" = "keyring.backends.null.Keyring";
+          services.uwsgi = {
+            enable = true;
+            instance = {
+              type = "emperor";
+              vassals.soot = {
+                type = "normal";
+                pythonPackages = [ self.packages.x86_64-linux.soot ];
+                module = "soot.server:app";
+                env = [
+                  "PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring"
+                ];
+                inherit socket;
+              };
+            };
           };
         };
       };
-    };
 }
