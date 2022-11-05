@@ -58,6 +58,7 @@
 
           services.uwsgi = {
             enable = true;
+            plugins = ["python3"];
             instance = {
               type = "emperor";
               vassals.soot = {
