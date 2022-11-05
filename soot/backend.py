@@ -21,10 +21,6 @@ def strip_tags(html):
     s.feed(html)
     return s.get_data()
 
-
-creds = Credentials("soot")
-
-
 class TootInterface():
     def __init__(self, masto):
         self.mastodon=masto
