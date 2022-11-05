@@ -54,7 +54,9 @@
               group = "soot";
               extraGroups = ["uwsgi"];
             };
-            groups.soot = {};
+            groups.soot = {
+              members = ["nginx"];
+            };
           };
 
           services.uwsgi = {
