@@ -3,22 +3,18 @@ from soot.backend import *
 
 app = Flask(__name__)
 
-global masto
-
+creds = None
 
 def is_authenticated():
     return session.get('access_token') is not None
-
 
 @app.route('/')
 def index():
     return render_template('index.html', results=[], registered=is_authenticated())
 
-
 @app.route('/register')
 def register():
     return redirect(creds.sent_oauth_register())
-
 
 @app.route('/authenticate')
 def authenticate():
@@ -28,17 +24,11 @@ def authenticate():
     session['access_token'] = access_token
     return redirect('/')
 
-
-
 @app.route('/logout')
 def logout():
     session.__delitem__('access_token')
     masto = creds.dummy_masto()
     return render_template('index.html', results=[], query=None, registered=is_authenticated())
-
-
-
-
 
 @app.route('/query')
 def query():
@@ -72,16 +62,13 @@ def query():
     # for (toot, score) in scoredToots[0:10]:
     #     print(toot)
 
-
     toot_ranking = [{'content': toot['content']
                         , 'author': toot['account']['username']
                         , 'uri':toot['url']
                         , 'verb':getVerb(toot)
                      } for (toot,score) in scoredToots if not toot['muted']]
 
-
     return render_template('index.html', toots=toot_ranking, query=request.args['q'], base_url=creds.domain, registered=is_authenticated())
-
 
 def main():
     global creds
