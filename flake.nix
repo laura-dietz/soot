@@ -48,18 +48,30 @@
             locations."/".extraConfig = "uwsgi_pass unix:${socket};";
           };
 
+          users = {
+            users.soot = {
+              isSystemUser = true;
+            };
+            groups.soot = {};
+          };
+
           services.uwsgi = {
             enable = true;
             instance = {
               type = "emperor";
               vassals.soot = {
-                type = "normal";
                 pythonPackages = [ self.packages.x86_64-linux.soot ];
+                type = "normal";
+                enable-threads = true;
+                strict = true;
                 module = "soot.server:app";
+                immediate-uid = true;
+                immediate-gid = true;
                 env = [
                   "PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring"
                 ];
                 inherit socket;
+                chmod-socket = "660";
               };
             };
           };
