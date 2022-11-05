@@ -3,8 +3,6 @@ from soot.backend import *
 
 app = Flask(__name__)
 
-creds = None
-
 def is_authenticated():
     return session.get('access_token') is not None
 
@@ -14,11 +12,13 @@ def index():
 
 @app.route('/register')
 def register():
+    creds = app.config['CREDS']
     return redirect(creds.sent_oauth_register())
 
 @app.route('/authenticate')
 def authenticate():
     auth_code = request.args['access_token']
+    creds = app.config['CREDS']
     masto = creds.dummy_masto()
     access_token = masto.log_in(code=auth_code, scopes=['read'], to_file="soot.token")
     session['access_token'] = access_token
@@ -27,12 +27,14 @@ def authenticate():
 @app.route('/logout')
 def logout():
     session.__delitem__('access_token')
+    creds = app.config['CREDS']
     masto = creds.dummy_masto()
     return render_template('index.html', results=[], query=None, registered=is_authenticated())
 
 @app.route('/query')
 def query():
     query_raw = request.args['q'].split(" ")
+    creds = app.config['CREDS']
     masto = creds.create_masto(session['access_token'])
     user_interface = TootInterface(masto)
 
@@ -71,8 +73,6 @@ def query():
     return render_template('index.html', toots=toot_ranking, query=request.args['q'], base_url=creds.domain, registered=is_authenticated())
 
 def main():
-    global creds
-
     p = argparse.ArgumentParser("soot-bm25-server", description="Mastodon web search interface"
                                                          "First create new application under mastadon/Settings/Development, select read only, submit, then identify client key, secret, and token.")
 
@@ -82,12 +82,11 @@ def main():
     p.add_argument('--port',help="public facing web port", default=5000)
     args = p.parse_args()
 
-
-
     creds = Credentials(args.base_url)
     if not creds.is_client_registered():
         creds.client_register()
 
+    app.config['CREDS'] = creds
     app.secret_key = creds.get_secret_session_key()
     app.run(host=args.host, port=args.port)
     
