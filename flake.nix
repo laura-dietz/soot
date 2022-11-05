@@ -66,8 +66,8 @@
                 enable-threads = true;
                 strict = true;
                 module = "soot.server:app";
-                immediate-uid = true;
-                immediate-gid = true;
+                immediate-uid = "soot";
+                immediate-gid = "soot";
                 env = [
                   "PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring"
                 ];
