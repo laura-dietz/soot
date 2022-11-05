@@ -73,7 +73,7 @@
                 module = "soot.server:app";
                 uid = "soot";
                 gid = "soot";
-                #chmod-socket = "660";
+                chmod-socket = "660";
                 inherit socket;
                 env = [
                   "PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring"
