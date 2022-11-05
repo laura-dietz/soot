@@ -68,8 +68,8 @@
                 enable-threads = true;
                 strict = true;
                 module = "soot.server:app";
-                immediate-uid = "soot";
-                immediate-gid = "soot";
+                uid = "soot";
+                gid = "soot";
                 chmod-socket = "660";
                 chown-socket = "soot";
                 inherit socket;
