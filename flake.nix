@@ -45,7 +45,7 @@
             socket = "${config.services.uwsgi.runDir}/soot.sock";
         in {
           services.nginx.virtualHosts."soot.smart-cactus.org" = {
-            locations."/".proxyPass = "unix://${socket}";
+            locations."/".extraConfig = "uwsgi_pass unix:${socket};";
           };
 
           services.uwsgi = {
