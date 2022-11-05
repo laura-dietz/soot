@@ -36,6 +36,7 @@ def logout():
 
 @app.route('/query')
 def query():
+    print('access_token', session.get('access_token'))
     query_raw = request.args['q'].split(" ")
     creds = app.config['CREDS']
     masto = creds.create_masto(session['access_token'])
@@ -64,8 +65,8 @@ def query():
 
     # rank toots by relevance
     scoredToots = searcher.rank(user_interface.getHomeToots(), query_terms)
-    # for (toot, score) in scoredToots[0:10]:
-    #     print(toot)
+    for (toot, score) in scoredToots[0:10]:
+        print(toot)
 
     toot_ranking = [{'content': toot['content']
                         , 'author': toot['account']['username']
@@ -83,6 +84,8 @@ def main():
     p.add_argument('--base-url', help="base url of your mastodon instance", default=DEFAULT_BASE_URL)
     p.add_argument('--host',help="public facing web hostname", default='0.0.0.0')
     p.add_argument('--port',help="public facing web port", default=5000)
+    p.add_argument('--client-id',help="Soot client ID (register one)", default='5a2d74cbb65b43ed8be11e72de8f856948a997f5bccc537ccc5c5b69b53687d0')
+    p.add_argument('--client-secret',help="Soot client secret (register)", default="469ff3d723779fb43878f41fb6cdd07b43f56af30963ca455388afce4140cacf")
     args = p.parse_args()
 
     creds = Credentials(args.base_url)

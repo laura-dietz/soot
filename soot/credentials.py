@@ -52,6 +52,6 @@ class Credentials:
         return Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), api_base_url=self.domain)
 
     def create_masto(self,access_token):
-        # return Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), access_token=access_token)
-        return Mastodon(access_token=access_token)
+        return Mastodon(client_id=self.get_client_id(), client_secret=self.get_client_secret(), api_base_url=self.domain, access_token=access_token)
+        #return Mastodon(access_token=access_token)
 
