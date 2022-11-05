@@ -51,6 +51,7 @@
           users = {
             users.soot = {
               isSystemUser = true;
+              group = "soot";
             };
             groups.soot = {};
           };
