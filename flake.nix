@@ -62,7 +62,7 @@
             instance = {
               type = "emperor";
               vassals.soot = {
-                pythonPackages = [ self.packages.x86_64-linux.soot ];
+                pythonPackages = _pkgs: [ self.packages.x86_64-linux.soot ];
                 type = "normal";
                 enable-threads = true;
                 strict = true;
