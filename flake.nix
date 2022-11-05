@@ -67,10 +67,10 @@
                 enable-threads = true;
                 strict = true;
                 module = "soot.server:app";
-                immediate-uid = "soot";
-                immediate-gid = "soot";
-                chmod-socket = "660";
-                chown-socket = "soot";
+                #immediate-uid = "soot";
+                #immediate-gid = "soot";
+                #chmod-socket = "660";
+                #chown-socket = "soot";
                 inherit socket;
                 env = [
                   "PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring"
